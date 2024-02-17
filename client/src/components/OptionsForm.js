@@ -9,6 +9,28 @@ function OptionsForm({ onSubmit, selectedTime }) {
 
   const handleAcceptOption = (option) => {
     setAcceptedOptions(prev => [...prev, option.name]);
+
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        {
+        "id": option["id"]
+    })
+    };
+
+    fetch('http://127.0.0.1:5000/locationChoose', requestOptions).then((res) => {
+
+      if (res.status == 200) {
+      
+      } else {
+        res.json().then((json) => {
+          alert(json["message"])
+        })
+      }
+      
+    })
+
   };
 
   const handleDeclineOption = (optionName) => {
@@ -17,9 +39,9 @@ function OptionsForm({ onSubmit, selectedTime }) {
 
   // Assuming restaurantOptions is defined within this component
   const restaurantOptions = [
-    { name: 'Italian Bistro', address: '123 Pasta Lane' },
-    { name: 'Sushi Place', address: '456 Sashimi Blvd' },
-    { name: 'Taco Stand', address: '789 Taco Terrace' },
+    { id: 0, name: 'Italian Bistro', address: '123 Pasta Lane' },
+    { id: 1, name: 'Sushi Place', address: '456 Sashimi Blvd' },
+    { id: 2, name: 'Taco Stand', address: '789 Taco Terrace' },
   ];
 
   const filteredOptions = restaurantOptions.filter(option => !declinedOptions.includes(option.name));

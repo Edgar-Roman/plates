@@ -28,12 +28,12 @@ class LocationTimePair(db.Model):
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    cuisines = db.Column(db.String(300))
-    distance = db.Column(db.Integer(30))
-    price = db.Column(db.Integer(80))
-    groupSize = db.Column(db.String(100))
+    cuisines = db.Column(db.String(300), default="")
+    distance = db.Column(db.Integer, default=-1)
+    price = db.Column(db.String(100), default="")
+    groupSize = db.Column(db.String(100), default="")
     password_hash = db.Column(db.String(128))
-    locations = db.Column(db.String(300))
+    locations = db.Column(db.String(300), default="")
     # cuisine, willing to travel miles 0-20, price range ($, $$, $$$, $$$), 
     # preferred group size 1-2, 3-4, 5-6, 7+
 
@@ -91,14 +91,14 @@ def preferences():
     return jsonify({'message': 'set preferences for ' + data['username']}), 200
 
 @app.route('/preferences', methods=['GET'])
-def preferences():
+def get_preferences():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
     
     return jsonify(user.get_preferences()), 200
 
 @app.route('/locationChoose', methods=['POST'])
-def preferences():
+def locationChoose():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
     locationPair = LocationTimePair.query.filter_by(id=data['id']).first()
@@ -108,7 +108,7 @@ def preferences():
     return jsonify({'message': 'set preferences for ' + data['username']}), 200
 
 @app.route('/locationPair', methods=['GET'])
-def preferences():
+def locationPair():
     data = request.get_json()
 
     loc_pair_values = LocationTimePair.query.filter_by(id=data["id"].first()).get_pair()

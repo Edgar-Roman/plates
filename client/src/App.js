@@ -5,7 +5,6 @@ import LoginForm from './components/LoginForm';
 import PreferencesForm from './components/PreferencesForm';
 import SchedulerForm from './components/SchedulerForm';
 import OptionsForm from './components/OptionsForm';
-import UserForm from './components/UserForm';
 import { Button, Container, Box, Typography } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -61,7 +60,6 @@ function App() {
           {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} />}
           {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} />}
           {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} />}
-          {view === 'userForm' && <UserForm selectedTime={selectedTime} selectedOption={selectedOption} />}
           
           {isLoggedIn && view !== 'userForm' && (
             <Button

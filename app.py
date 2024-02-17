@@ -36,13 +36,13 @@ def register():
 
 @app.route('/login', methods=['POST'])
 def login():
-    # data = request.get_json()
-    # user = User.query.filter_by(username=data['username']).first()
-    # if user and user.check_password(data['password']):
-    #     return jsonify({'message': 'Login successful!'}), 200
-    # return jsonify({'message': 'Invalid username or password'}), 401
+    data = request.get_json()
+    user = User.query.filter_by(username=data['username']).first()
+    if user and user.check_password(data['password']):
+        return jsonify({'message': 'Login successful!'}), 200
+    return jsonify({'message': 'Invalid username or password'}), 401
 
-     return jsonify({'message': 'Login bypassed for now'}), 200
+    #return jsonify({'message': 'Login bypassed for now'}), 200
 
 if __name__ == '__main__':
     with app.app_context():

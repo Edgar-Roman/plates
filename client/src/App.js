@@ -3,19 +3,19 @@ import './App.css';
 import RegistrationForm from './components/RegistrationForm';
 import LoginForm from './components/LoginForm';
 import PreferencesForm from './components/PreferencesForm';
-import SchedulerForm from './components/SchedulerForm'; // Import the SchedulerForm component
+import SchedulerForm from './components/SchedulerForm';
 import { Button, Box, Typography, Container } from '@mui/material';
 
 function App() {
   const [isNewUser, setIsNewUser] = useState(true);
-  const [view, setView] = useState('auth'); // Add 'scheduler' to the list of views
+  const [view, setView] = useState('auth'); // Include 'scheduler' in the possible views
 
   const handleAuthSuccess = () => {
-    setView('preferences'); // Switch to preferences form upon successful auth
+    setView('preferences');
   };
 
   const handlePreferencesSubmit = () => {
-    setView('scheduler'); // Switch to scheduler form after preferences are submitted
+    setView('scheduler'); // Update the view to 'scheduler' after preferences are submitted
   };
 
   return (
@@ -49,7 +49,7 @@ function App() {
           </>
         )}
         {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} />}
-        {view === 'scheduler' && <SchedulerForm />} // Render the SchedulerForm when view is 'scheduler'
+        {view === 'scheduler' && <SchedulerForm />}
       </Box>
     </Container>
   );

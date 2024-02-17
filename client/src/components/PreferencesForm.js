@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, FormGroup, FormControlLabel, Checkbox, Slider, RadioGroup, Radio, FormControl, FormLabel, MenuItem, Select, InputLabel, Button } from '@mui/material';
 
-function PreferencesForm() {
+function PreferencesForm({ onSubmit }) {  // Accept onSubmit as a prop
   const [cuisines, setCuisines] = useState([]);
   const [distance, setDistance] = useState(5);
   const [price, setPrice] = useState('');
@@ -24,8 +24,13 @@ function PreferencesForm() {
     setGroupSize(event.target.value);
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    onSubmit();  // Call onSubmit prop function when the form is submitted
+  };
+
   return (
-    <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Typography variant="h6">Select Your Preferences</Typography>
 
       {/* Cuisine Preferences */}
@@ -63,8 +68,7 @@ function PreferencesForm() {
           ))}
         </Select>
       </FormControl>
-
-      <Button variant="contained" color="primary">Submit Preferences</Button>
+      <Button type="submit" variant="contained" color="primary">Submit Preferences</Button>
     </Box>
   );
 }

@@ -19,7 +19,7 @@ function RegistrationForm({ onAuthSuccess }) {
 
     fetch('http://127.0.0.1:5000/register', requestOptions).then((res) => {
 
-    if (res.status == 200) {
+    if (res.status === 200) {
       onAuthSuccess();
     } else {
       res.json().then((json) => {

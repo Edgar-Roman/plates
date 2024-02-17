@@ -21,8 +21,7 @@ function OptionsForm({ onSubmit, selectedTime }) {
 
     fetch('http://127.0.0.1:5000/locationChoose', requestOptions).then((res) => {
 
-      if (res.status == 200) {
-      
+      if (res.status === 200) {
       } else {
         res.json().then((json) => {
           alert(json["message"])

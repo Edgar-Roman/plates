@@ -19,7 +19,7 @@ function LoginForm({ onAuthSuccess }) {
 
     fetch('http://127.0.0.1:5000/login', requestOptions).then((res) => {
 
-      if (res.status == 200) {
+      if (res.status === 200) {
         onAuthSuccess();
       } else {
         res.json().then((json) => {

@@ -61,7 +61,7 @@ function App() {
           {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} />}
           {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} />}
           
-          {isLoggedIn && view !== 'userForm' && (
+          {/* {isLoggedIn && view !== 'userForm' && (
             <Button
               variant="contained"
               sx={{ mt: 2 }}
@@ -69,7 +69,7 @@ function App() {
             >
               Go to User Form
             </Button>
-          )}
+          )} */}
         </Box>
       </Container>
     </LocalizationProvider>

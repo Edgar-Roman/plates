@@ -34,9 +34,6 @@ class User(db.Model):
     groupSize = db.Column(db.String(100), default="")
     password_hash = db.Column(db.String(128))
     locations = db.Column(db.String(300), default="")
-    # cuisine, willing to travel miles 0-20, price range ($, $$, $$$, $$$), 
-    # preferred group size 1-2, 3-4, 5-6, 7+
-
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -45,10 +42,12 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
     def set_preferences(self, data):
-        self.cuisines = data["cuisines"].join(" ")
-        self.distance = int(data["distance"])
-        self.price = data["price"].join(" ")
-        self.groupSize = data["groupSize"].join(" ")
+        # Adjusted to check and join only if the key exists in data
+        self.cuisines = " ".join(data["cuisines"]) if "cuisines" in data else self.cuisines
+        self.distance = int(data["distance"]) if "distance" in data else self.distance
+        self.price = " ".join(data["price"]) if "price" in data else self.price
+        self.groupSize = " ".join(data["groupSize"]) if "groupSize" in data else self.groupSize
+        db.session.commit()
 
     def get_preferences(self):
         return {"cuisines": self.cuisines, "distance": self.distance,
@@ -56,6 +55,7 @@ class User(db.Model):
     
     def add_locationPairs(self, locationPairs):
         self.locations += " " + locationPairs
+        db.session.commit()
     
     def getLocationPairs(self):
         return self.locations.split(" ")
@@ -63,14 +63,11 @@ class User(db.Model):
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    print(data)
     user = User(username=data['username'])
     user.set_password(data['password'])
     db.session.add(user)
     db.session.commit()
     return jsonify({'message': 'User registered successfully!'}), 201
-
-    #return jsonify({'message': 'Registration bypassed for now'}), 200
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -80,43 +77,46 @@ def login():
         return jsonify({'message': 'Login successful!'}), 200
     return jsonify({'message': 'Invalid username or password'}), 401
 
-    #return jsonify({'message': 'Login bypassed for now'}), 200
-
 @app.route('/preferences', methods=['POST'])
 def preferences():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
-    user.set_preferences(data)
-
-    return jsonify({'message': 'set preferences for ' + data['username']}), 200
+    if user:
+        user.set_preferences(data)
+        return jsonify({'message': 'Preferences set for ' + data['username']}), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
 
 @app.route('/preferences', methods=['GET'])
 def get_preferences():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
-    
-    return jsonify(user.get_preferences()), 200
+    if user:
+        return jsonify(user.get_preferences()), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
 
 @app.route('/locationChoose', methods=['POST'])
 def locationChoose():
     data = request.get_json()
+    print(data)
     user = User.query.filter_by(username=data['username']).first()
-    locationPair = LocationTimePair.query.filter_by(id=data['id']).first()
-
-    user.add_locationPairs(data["locationPairs"])
-
-    return jsonify({'message': 'set preferences for ' + data['username']}), 200
+    if user:
+        user.add_locationPairs(data["locationPairs"])
+        return jsonify({'message': 'Location preferences updated for ' + data['username']}), 200
+    else:
+        return jsonify({'message': 'User not found'}), 404
 
 @app.route('/locationPair', methods=['GET'])
 def locationPair():
     data = request.get_json()
-
-    loc_pair_values = LocationTimePair.query.filter_by(id=data["id"].first()).get_pair()
-
-    return jsonify(loc_pair_values), 200
+    loc_pair_values = LocationTimePair.query.filter_by(id=data["id"]).first()
+    if loc_pair_values:
+        return jsonify(loc_pair_values.get_pair()), 200
+    else:
+        return jsonify({'message': 'Location-Time pair not found'}), 404
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Create database tables
+        db.create_all()
         app.run(debug=True)
-

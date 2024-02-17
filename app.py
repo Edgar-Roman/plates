@@ -4,6 +4,8 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
+from matching import match_users_and_restaurants
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.config['SECRET_KEY'] = 'your-secret-key'  # Add a secret key for sessions and Flask-Login
@@ -66,6 +68,12 @@ class User(UserMixin, db.Model):
     def getLocationPairs(self):
         return self.locations.split(" ")
 
+
+# class Restaurant(UserMixin, db.Model):
+#     pass # TODO: Add restaurant model
+
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -92,6 +100,7 @@ def login():
 @login_required
 def preferences():
     data = request.get_json()
+    print("DATA is", data )
     user = current_user
     if user:
         user.set_preferences(data)
@@ -128,6 +137,15 @@ def locationPair():
         return jsonify(loc_pair_values.get_pair()), 200
     else:
         return jsonify({'message': 'Location-Time pair not found'}), 404
+
+@app.route('/match', methods=['GET'])
+@login_required
+def match():
+    users = User.query.all()
+    # restaurants = Restaurant.query.all()
+    restaurants = []    # TODO: add above back after setting up restaurant model
+    matches = match_users_and_restaurants(users, restaurants, current_user)
+    return jsonify({"matches": matches}), 200
 
 if __name__ == '__main__':
     with app.app_context():

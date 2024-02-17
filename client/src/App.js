@@ -21,7 +21,27 @@ function App() {
     setIsLoggedIn(true); // Assume user is logged in after successful auth
   };
 
-  const handlePreferencesSubmit = () => setView('scheduler');
+  // const handlePreferencesSubmit = () => setView('scheduler');
+  const handlePreferencesSubmit = (preferencesData) => {
+    // API call to update preferences in the backend
+    fetch('http://127.0.0.1:5000/preferences', { // Adjust the URL as needed
+      method: 'POST',
+      credentials: 'include', // Important for session handling
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(preferencesData),
+    })
+    .then(response => {
+      if(response.ok) {
+        setView('scheduler'); // Proceed to the scheduler view on success
+      } else {
+        // Handle errors or unsuccessful updates here
+        console.error('Failed to update preferences');
+      }
+    })
+    .catch(error => console.error('Error:', error));
+  };
 
   const handleSchedulerSubmit = (time) => {
     setSelectedTime(time);

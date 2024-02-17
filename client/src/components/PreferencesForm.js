@@ -24,9 +24,22 @@ function PreferencesForm({ onSubmit }) {  // Accept onSubmit as a prop
     setGroupSize(event.target.value);
   };
 
+  // const handleSubmit = (event) => {
+  //   event.preventDefault();
+  //   onSubmit();  // Call onSubmit prop function when the form is submitted
+  // };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit();  // Call onSubmit prop function when the form is submitted
+    const preferencesData = {
+      cuisines,
+      distance,
+      price,
+      groupSize,
+    };
+  
+    // Call the onSubmit prop function, passing the preferencesData
+    onSubmit(preferencesData);
   };
 
   return (

@@ -6,6 +6,7 @@
     "@date-io/date-fns": "^3.0.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10",
     "@mui/x-date-pickers": "^6.19.4",
     "@testing-library/jest-dom": "^5.17.0",

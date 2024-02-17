@@ -1,37 +1,30 @@
 import React, { useState } from 'react';
-import './App.css';
+import Header from './components/Header';
 import RegistrationForm from './components/RegistrationForm';
 import LoginForm from './components/LoginForm';
 import PreferencesForm from './components/PreferencesForm';
 import SchedulerForm from './components/SchedulerForm';
-import { Button, Box, Typography, Container } from '@mui/material';
+import OptionsForm from './components/OptionsForm';
+import { Button, Container, Box, Typography } from '@mui/material';
 
 function App() {
   const [isNewUser, setIsNewUser] = useState(true);
-  const [view, setView] = useState('auth'); // Include 'scheduler' in the possible views
+  const [view, setView] = useState('auth');
+  const [selectedTime, setSelectedTime] = useState(null);
 
-  const handleAuthSuccess = () => {
-    setView('preferences');
-  };
+  const handleAuthSuccess = () => setView('preferences');
 
-  const handlePreferencesSubmit = () => {
-    setView('scheduler'); // Update the view to 'scheduler' after preferences are submitted
+  const handlePreferencesSubmit = () => setView('scheduler');
+
+  const handleSchedulerSubmit = (time) => {
+    setSelectedTime(time);
+    setView('options');
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-      <Box
-        sx={{
-          marginTop: '-10vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          backgroundColor: 'white',
-          padding: 3,
-          borderRadius: 1,
-          boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .3)',
-        }}
-      >
+    <Container component="main" maxWidth="xs">
+      <Header />
+      <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {view === 'auth' && (
           <>
             <Typography component="h1" variant="h5">
@@ -49,7 +42,8 @@ function App() {
           </>
         )}
         {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} />}
-        {view === 'scheduler' && <SchedulerForm />}
+        {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} />}
+        {view === 'options' && <OptionsForm selectedTime={selectedTime} />}
       </Box>
     </Container>
   );

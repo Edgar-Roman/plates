@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import dayjs from 'dayjs'; // Import dayjs
+import dayjs from 'dayjs';
 import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Box, Button, TextField } from '@mui/material';
 
-function SchedulerForm() {
-  const [selectedDate, setSelectedDate] = useState(dayjs()); // Initialize state with a Dayjs object
+function SchedulerForm({ onSubmit }) {
+  const [selectedDate, setSelectedDate] = useState(dayjs());
 
   const handleDateChange = (newValue) => {
     setSelectedDate(newValue);
   };
 
   const handleSubmit = () => {
-    console.log('Selected Date and Time:', selectedDate.toString()); // Log the selected Dayjs date/time
+    onSubmit(selectedDate); // Pass the selected date/time to the parent component on submit
   };
 
   return (

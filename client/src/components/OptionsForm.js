@@ -3,7 +3,7 @@ import { Card, CardContent, Typography, CardActions, Button, Box } from '@mui/ma
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-function OptionsForm({ onSubmit, selectedTime }) {
+function OptionsForm({ onSubmit, selectedTime, username }) {
   const [acceptedOptions, setAcceptedOptions] = useState([]);
   const [declinedOptions, setDeclinedOptions] = useState([]);
 
@@ -16,6 +16,7 @@ function OptionsForm({ onSubmit, selectedTime }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(
         {
+        "username": username,
         "id": option["id"]
     })
     };
@@ -33,8 +34,30 @@ function OptionsForm({ onSubmit, selectedTime }) {
 
   };
 
-  const handleDeclineOption = (optionName) => {
-    setDeclinedOptions(prev => [...prev, optionName]);
+  const handleDeclineOption = (option) => {
+    setDeclinedOptions(prev => [...prev, option.name]);
+
+    const requestOptions = {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        {
+        "username": username,
+        "id": option["id"]
+    })
+    };
+
+    fetch('http://127.0.0.1:5000/locationRemove', requestOptions).then((res) => {
+
+      if (res.status === 200) {
+      } else {
+        res.json().then((json) => {
+          alert(json["message"])
+        })
+      }
+      
+    })
   };
 
   // Assuming restaurantOptions is defined within this component
@@ -65,7 +88,7 @@ function OptionsForm({ onSubmit, selectedTime }) {
             <Button size="small" onClick={() => handleAcceptOption(option)} startIcon={<CheckCircleIcon style={{ color: 'green' }} />}>
               Accept
             </Button>
-            <Button size="small" onClick={() => handleDeclineOption(option.name)} startIcon={<CancelIcon style={{ color: 'red' }} />}>
+            <Button size="small" onClick={() => handleDeclineOption(option)} startIcon={<CancelIcon style={{ color: 'red' }} />}>
               Decline
             </Button>
           </CardActions>

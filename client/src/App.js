@@ -15,10 +15,11 @@ function App() {
   const [selectedTime, setSelectedTime] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track if user is logged in
   const [selectedOption, setSelectedOption] = useState(null); // State to store the selected option
+  const [username, setUsername] = useState(null);
 
   const handleAuthSuccess = () => {
     setView('preferences');
-    setIsLoggedIn(true); // Assume user is logged in after successful auth
+   //s setIsLoggedIn(true); // Assume user is logged in after successful auth
   };
 
   const handlePreferencesSubmit = () => setView('scheduler');
@@ -46,7 +47,7 @@ function App() {
               <Typography component="h1" variant="h5">
                 {isNewUser ? 'Register' : 'Login'}
               </Typography>
-              {isNewUser ? <RegistrationForm onAuthSuccess={handleAuthSuccess} /> : <LoginForm onAuthSuccess={handleAuthSuccess} />}
+              {isNewUser ? <RegistrationForm onAuthSuccess={handleAuthSuccess} setUsername={setUsername} username={username}/> : <LoginForm onAuthSuccess={handleAuthSuccess} setUsername={setUsername} username={username}/>}
               <Button
                 fullWidth
                 variant="outlined"
@@ -57,9 +58,9 @@ function App() {
               </Button>
             </>
           )}
-          {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} />}
-          {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} />}
-          {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} />}
+          {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} username={username} />}
+          {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} username={username} />}
+          {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} username={username} />}
           
           {/* {isLoggedIn && view !== 'userForm' && (
             <Button

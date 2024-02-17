@@ -40,6 +40,7 @@ class User(UserMixin, db.Model):
     groupSize = db.Column(db.String(100), default="")
     password_hash = db.Column(db.String(128))
     locations = db.Column(db.String(300), default="")
+    date = db.Column(db.String(300), default="")
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -60,11 +61,20 @@ class User(UserMixin, db.Model):
                 "price": self.price, "groupSize": self.groupSize}
     
     def add_locationPairs(self, locationPairs):
-        self.locations += " " + locationPairs
+        self.locations += " " + str(locationPairs)
+        db.session.commit()
+    
+    def delete_locationPairs(self, locationPairs):
+        locationList = self.locations.split(" ")
+        locationList = list(filter(lambda a: a != locationPairs, self.locations))
+        self.locations = " ".join(locationList)
         db.session.commit()
     
     def getLocationPairs(self):
         return self.locations.split(" ")
+
+    def set_date(self, date):
+        self.date = date
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -73,11 +83,15 @@ def load_user(user_id):
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+
+    if User.query.filter_by(username=data['username']).count() != 0:
+        return jsonify({'message': 'Username taken'}), 401
+
     user = User(username=data['username'])
     user.set_password(data['password'])
     db.session.add(user)
     db.session.commit()
-    return jsonify({'message': 'User registered successfully!'}), 201
+    return jsonify({'message': 'User registered successfully!'}), 200
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -89,10 +103,10 @@ def login():
     return jsonify({'message': 'Invalid username or password'}), 401
 
 @app.route('/preferences', methods=['POST'])
-@login_required
 def preferences():
     data = request.get_json()
-    user = current_user
+    user = User.query.filter_by(username=data['username']).first()
+    print(data)
     if user:
         user.set_preferences(data)
         db.session.commit()
@@ -111,14 +125,24 @@ def get_preferences():
 @app.route('/locationChoose', methods=['POST'])
 def locationChoose():
     data = request.get_json()
-    # print("CURRENT USER", current_user)
-    # print(current_user.username)
-    if current_user.is_authenticated:
-        current_user.add_locationPairs(data["locationPairs"])
-        db.session.commit()
-        return jsonify({'message': 'Location preferences updated successfully'}), 200
-    else:
-        return jsonify({'message': 'User not found or not logged in'}), 404
+
+    user = User.query.filter_by(username=data['username']).first()
+
+    user.add_locationPairs(data["id"])
+    db.session.commit()
+    return jsonify({'message': 'Location preferences updated successfully'}), 200
+    #     return jsonify({'message': 'Location preferences updated successfully'}), 200
+    # else:
+    #     return jsonify({'message': 'User not found or not logged in'}), 404
+@app.route('/locationRemove', methods=['POST'])
+def locationRemove():
+    data = request.get_json()
+
+    user = User.query.filter_by(username=data['username']).first()
+
+    user.delete_locationPairs(data["id"])
+    db.session.commit()
+    return jsonify({'message': 'Location preferences updated successfully'}), 200
 
 @app.route('/locationPair', methods=['GET'])
 def locationPair():
@@ -128,6 +152,17 @@ def locationPair():
         return jsonify(loc_pair_values.get_pair()), 200
     else:
         return jsonify({'message': 'Location-Time pair not found'}), 404
+
+@app.route('/date', methods=['POST'])
+def date():
+    data = request.get_json()
+    user = User.query.filter_by(username=data['username']).first()
+    print(data)
+    if user:
+        user.set_date(data["date"])
+        db.session.commit()
+        return jsonify({'message': 'date updated successfully'}), 200
+    return jsonify({'message': 'User not found'}), 404
 
 if __name__ == '__main__':
     with app.app_context():

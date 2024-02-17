@@ -1,9 +1,9 @@
 import { React, useState} from 'react';
 import { TextField, Button, Box } from '@mui/material';
 
-function RegistrationForm({ onAuthSuccess }) {
+function RegistrationForm({ onAuthSuccess, setUsername, username }) {
 
-  const [username, setUsername] = useState("");
+  const [localUser, setLocalUser] = useState("");
   const [password, setPassword] = useState("");
 
   function addUser() {
@@ -13,7 +13,7 @@ function RegistrationForm({ onAuthSuccess }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(
         {
-        "username": username,
+        "username": localUser,
         "password": password
     })
     };
@@ -22,6 +22,7 @@ function RegistrationForm({ onAuthSuccess }) {
 
     if (res.status === 200) {
       onAuthSuccess();
+      setUsername(localUser)
     } else {
       res.json().then((json) => {
         alert(json["message"])
@@ -29,14 +30,12 @@ function RegistrationForm({ onAuthSuccess }) {
     }
 
 
-    })
-
-    
+    }) 
   }
 
   return (
     <Box component="form" onSubmit={(e) => { e.preventDefault(); addUser();}} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <TextField label="Username" variant="outlined" onChange={e => setUsername(e.target.value)}/>
+      <TextField label="Username" variant="outlined" onChange={e => setLocalUser(e.target.value)}/>
       <TextField label="Password" type="password" variant="outlined" onChange={e => setPassword(e.target.value)}/>
       <Button type="submit" variant="contained" color="primary">Register</Button>
     </Box>

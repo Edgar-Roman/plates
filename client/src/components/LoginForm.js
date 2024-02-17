@@ -1,9 +1,9 @@
 import {React, useState} from 'react';
 import { TextField, Button, Box } from '@mui/material';
 
-function LoginForm({ onAuthSuccess }) {
+function LoginForm({ onAuthSuccess, setUsername, username}) {
 
-  const [username, setUsername] = useState("");
+  const [localUser, setLocalUser] = useState("");
   const [password, setPassword] = useState("");
 
   function addUser() {
@@ -13,7 +13,7 @@ function LoginForm({ onAuthSuccess }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(
         {
-        "username": username,
+        "username": localUser,
         "password": password
     })
     };
@@ -22,18 +22,19 @@ function LoginForm({ onAuthSuccess }) {
 
       if (res.status === 200) {
         onAuthSuccess();
+        setUsername(localUser);
       } else {
         res.json().then((json) => {
           alert(json["message"])
         })
       }
-      
+
     })
   }
 
   return (
     <Box component="form" onSubmit={(e) => { e.preventDefault(); addUser();}} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <TextField label="Username" variant="outlined" onChange={e => setUsername(e.target.value)}/>
+      <TextField label="Username" variant="outlined" onChange={e => setLocalUser(e.target.value)}/>
       <TextField label="Password" type="password" variant="outlined" onChange={e => setPassword(e.target.value)}/>
       <Button type="submit" variant="contained" color="primary">Login</Button>
     </Box>

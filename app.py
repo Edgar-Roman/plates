@@ -1,15 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
+app.config['SECRET_KEY'] = 'your-secret-key'  # Add a secret key for sessions and Flask-Login
 
 # Database configuration (using SQLite for simplicity)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackathon.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 class LocationTimePair(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,7 +31,7 @@ class LocationTimePair(db.Model):
     def get_pair(self):
         return {"location": self.location, "time": self.time}
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     cuisines = db.Column(db.String(300), default="")
@@ -60,6 +66,10 @@ class User(db.Model):
     def getLocationPairs(self):
         return self.locations.split(" ")
 
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -74,18 +84,20 @@ def login():
     data = request.get_json()
     user = User.query.filter_by(username=data['username']).first()
     if user and user.check_password(data['password']):
+        login_user(user)
         return jsonify({'message': 'Login successful!'}), 200
     return jsonify({'message': 'Invalid username or password'}), 401
 
 @app.route('/preferences', methods=['POST'])
+@login_required
 def preferences():
     data = request.get_json()
-    user = User.query.filter_by(username=data['username']).first()
+    user = current_user
     if user:
         user.set_preferences(data)
-        return jsonify({'message': 'Preferences set for ' + data['username']}), 200
-    else:
-        return jsonify({'message': 'User not found'}), 404
+        db.session.commit()
+        return jsonify({'message': 'Preferences updated successfully'}), 200
+    return jsonify({'message': 'User not found'}), 404
 
 @app.route('/preferences', methods=['GET'])
 def get_preferences():
@@ -99,13 +111,14 @@ def get_preferences():
 @app.route('/locationChoose', methods=['POST'])
 def locationChoose():
     data = request.get_json()
-    print(data)
-    user = User.query.filter_by(username=data['username']).first()
-    if user:
-        user.add_locationPairs(data["locationPairs"])
-        return jsonify({'message': 'Location preferences updated for ' + data['username']}), 200
+    # print("CURRENT USER", current_user)
+    # print(current_user.username)
+    if current_user.is_authenticated:
+        current_user.add_locationPairs(data["locationPairs"])
+        db.session.commit()
+        return jsonify({'message': 'Location preferences updated successfully'}), 200
     else:
-        return jsonify({'message': 'User not found'}), 404
+        return jsonify({'message': 'User not found or not logged in'}), 404
 
 @app.route('/locationPair', methods=['GET'])
 def locationPair():

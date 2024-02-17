@@ -9,6 +9,7 @@ function LoginForm({ onAuthSuccess }) {
   function addUser() {
     const requestOptions = {
       method: 'POST',
+      credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(
         {

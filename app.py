@@ -24,14 +24,15 @@ class User(db.Model):
 
 @app.route('/register', methods=['POST'])
 def register():
-    # data = request.get_json()
-    # user = User(username=data['username'])
-    # user.set_password(data['password'])
-    # db.session.add(user)
-    # db.session.commit()
-    # return jsonify({'message': 'User registered successfully!'}), 201
+    data = request.get_json()
+    print(data)
+    user = User(username=data['username'])
+    user.set_password(data['password'])
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({'message': 'User registered successfully!'}), 201
 
-    return jsonify({'message': 'Registration bypassed for now'}), 200
+    #return jsonify({'message': 'Registration bypassed for now'}), 200
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -44,6 +45,7 @@ def login():
      return jsonify({'message': 'Login bypassed for now'}), 200
 
 if __name__ == '__main__':
-    db.create_all()  # Create database tables
-    app.run(debug=True)
+    with app.app_context():
+        db.create_all()  # Create database tables
+        app.run(debug=True)
 

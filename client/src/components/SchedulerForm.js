@@ -5,7 +5,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Box, Button, TextField, IconButton, List, ListItem, ListItemText, ListItemSecondaryAction } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-function SchedulerForm({ onSubmit }) {
+function SchedulerForm({ onSubmit, username }) {
   const [schedules, setSchedules] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dayjs());
   const [startTime, setStartTime] = useState(dayjs());

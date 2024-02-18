@@ -294,7 +294,24 @@ def preferences():
 
     response = requests.get(url = ENDPOINT, params = PARAMETERS, headers = HEADERS)
     business_data = response.json()
-    print(business_data)
+    
+    locations = business_data["businesses"]
+
+    print(locations)
+
+    parsedLocations = []
+    for val in locations:
+        if val.get("name", None) and val.get("image_url", None) and val.get("rating", None) and val.get("address1", None) and val.get("url", None):
+            print("adding a value")
+            parsedLocations.append({"name": val["name"],
+                  "image": val["image_url"],
+                  "rating": val["rating"],
+                  "address": val["address1"] + ", " + val["city"] + ", " + val["state"],
+                  "yelp": val["url"]})
+
+    print("here")
+    print(len(parsedLocations))
+    print(parsedLocations)
 
     return jsonify({'message': 'Preferences saved successfully!'}), 200
 

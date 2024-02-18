@@ -10,7 +10,7 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
   
     // List of cuisines
     const cuisines = [
-      "Chinese", "Greek", "Indian", "Italian", "Japanese", "Korean", "Mexican", "Thai", "Vietnamese",
+      "Japanese", "Chinese", "Indian", "Greek", "Italian", "Korean", "Mexican", "Thai"
     ];
   
     const handleCuisineChange = (_, newCuisines) => {
@@ -114,7 +114,7 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Typography variant="h6">Select Your Preferences</Typography>
+
 
       {/* Updated Cuisine Preferences using ToggleButtonGroup */}
       <Typography variant="subtitle1" sx={{ mt: 2, mb: 2 }}>Cuisine Preferences</Typography>

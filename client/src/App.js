@@ -44,14 +44,14 @@ function App() {
     setIsLoggedIn(true); // Set isLoggedIn to true upon successful authentication
 
     if (lvr === "login") {
-      setView("landingLogin");
+      setView("options");
     } else {
       setView('identity');
     }
   };
   
 
-  const handlePreferencesSubmit = () => setView('scheduler');
+  const handlePreferencesSubmit = () => setView('options');
 
   const handleSchedulerSubmit = (time) => {
     setSelectedTime(time);

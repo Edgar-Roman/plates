@@ -268,7 +268,8 @@ def find_matches():
     for matched_user in matched_users:
         overlap = find_time_overlap(current_user.availability, matched_user.availability)
         if overlap:
-            for restaurant in matches_info['common_restaurants']:
+            for match in matches_info:
+                restaurant = match['common_restaurants'][0] # Assume only one common restaurant for simplicity
                 create_event(restaurant, overlap, current_user, matched_user)
 
     return jsonify({'message': 'Matches processed'}), 200

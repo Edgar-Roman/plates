@@ -7,9 +7,9 @@ function IdentitySecure({onSubmit, username}) {
 
   return (
     <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <h1>Help us keep everyone safe!</h1>
+      <h1 style={{"textAlign": "center"}}>Help us keep everyone safe!</h1>
 
-      <form target="_blank" onClick={() => {
+      <form style={{"textAlign": "center"}} target="_blank" onClick={() => {
         setTimeout(() => {
           onSubmit();
        }, 3000);

@@ -20,9 +20,9 @@ function LoginLanding({onAuthSuccess, setUsername, username, prefComplete, handl
 
   return (
     <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Button onClick={(e) => { e.preventDefault(); handleLoginLandingClick("preferences");}} variant="contained" color="primary">Edit Preferences</Button>
+      <Button onClick={(e) => { e.preventDefault(); handleLoginLandingClick("preferences");}} variant="contained" color="primary" sx={{flexBasis: "100%", width: "100%"}}>Edit Preferences</Button>
 
-      {prefComplete == "true" ?  <Button variant="contained" color="primary" onClick={(e) => { e.preventDefault(); handleLoginLandingClick("matches");}}>Upcoming Plates</Button>
+      {prefComplete == "true" ?  <Button variant="contained" color="primary" sx={{flexBasis: "100%", width: "100%"}} onClick={(e) => { e.preventDefault(); handleLoginLandingClick("matches");}}>Upcoming Plates</Button>
        : 
 
        <div>
@@ -32,7 +32,7 @@ function LoginLanding({onAuthSuccess, setUsername, username, prefComplete, handl
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
-    <Button disabled={true} type="submit" variant="contained" color="primary" onSubmit={(e) => { e.preventDefault(); handleLoginLandingClick("matches");}}>Upcoming Plates</Button>
+    <Button disabled={true} type="submit" variant="contained" sx={{flexBasis: "100%", width: "100%"}} color="primary" onSubmit={(e) => { e.preventDefault(); handleLoginLandingClick("matches");}}>Upcoming Plates</Button>
        
       </Typography>
       <Popover
@@ -56,9 +56,9 @@ function LoginLanding({onAuthSuccess, setUsername, username, prefComplete, handl
         <Typography sx={{ p: 1 }}>Please fill out the preferences to view recommendations.</Typography>
       </Popover>
     </div>
-      
-       
        }
+
+<Button onClick={(e) => {e.preventDefault(); window.location.reload();}} sx={{flexBasis: "100%", width: "100%"}}variant="outlined" color="secondary">Log Out</Button>
     </Box>
   );
 }

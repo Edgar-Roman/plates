@@ -2,10 +2,7 @@
 import stripe
 import json
 import os
-
 from flask import Flask, redirect, render_template, jsonify, request, send_from_directory
-from dotenv import load_dotenv
-from pathlib import Path
 
 # example adapted from https://docs.stripe.com/samples/identity/redirect
 

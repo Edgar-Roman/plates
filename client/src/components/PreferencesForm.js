@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { Box, Typography, FormGroup, FormControlLabel, Checkbox, Slider, RadioGroup, Radio, FormControl, FormLabel, MenuItem, Select, InputLabel, Button } from '@mui/material';
+import { Box, Typography, FormGroup, FormControlLabel, Checkbox, Slider, RadioGroup, Radio, FormControl, FormLabel, ToggleButton, ToggleButtonGroup, MenuItem, Select, InputLabel, Button } from '@mui/material';
+
 
 function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
-  const [cuisines, setCuisines] = useState([]);
-  const [distance, setDistance] = useState(5);
-  const [price, setPrice] = useState('');
-  const [groupSize, setGroupSize] = useState('');
+    const [selectedCuisines, setSelectedCuisines] = useState([]);
+    const [distance, setDistance] = useState(5);
+    const [price, setPrice] = useState('');
+    const [groupSize, setGroupSize] = useState('');
+  
+    // List of cuisines
+    const cuisines = [
+      "American", "Chinese", "Cuban", "Greek", "Indian", "Italian", "Japanese", "Korean", "Mexican", "Thai", "Vietnamese",
+    ];
+  
+    const handleCuisineChange = (_, newCuisines) => {
+        setSelectedCuisines(newCuisines);
+    };
 
   function addPreferences() {
     const requestOptions = {
@@ -35,10 +45,10 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
   }
 
 
-  const handleCuisineChange = (event) => {
-    const { name, checked } = event.target;
-    setCuisines(prev => checked ? [...prev, name] : prev.filter(cuisine => cuisine !== name));
-  };
+//   const handleCuisineChange = (event) => {
+//     const { name, checked } = event.target;
+//     setCuisines(prev => checked ? [...prev, name] : prev.filter(cuisine => cuisine !== name));
+//   };
 
   const handleDistanceChange = (event, newValue) => {
     setDistance(newValue);
@@ -99,17 +109,22 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
       <Typography variant="h6">Select Your Preferences</Typography>
 
-      {/* Cuisine Preferences */}
-      <FormGroup>
-        <Typography variant="subtitle1">Cuisine Preferences</Typography>
-        {['Italian', 'Chinese', 'Japanese', 'Indian'].map((cuisine) => (
-          <FormControlLabel
-            key={cuisine}
-            control={<Checkbox name={cuisine} onChange={handleCuisineChange} />}
-            label={cuisine}
-          />
+      {/* Updated Cuisine Preferences using ToggleButtonGroup */}
+      <Typography variant="subtitle1" sx={{ mt: 2, mb: 2 }}>Cuisine Preferences</Typography>
+      <ToggleButtonGroup
+        value={selectedCuisines}
+        onChange={handleCuisineChange}
+        aria-label="cuisine preferences"
+        orientation="vertical"
+        fullWidth
+        sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 1 }}
+      >
+        {cuisines.map((cuisine) => (
+          <ToggleButton key={cuisine} value={cuisine} aria-label={cuisine}>
+            {cuisine}
+          </ToggleButton>
         ))}
-      </FormGroup>
+      </ToggleButtonGroup>
 
       {/* Distance Willing to Travel */}
       <Typography variant="subtitle1">Distance Willing to Travel (miles)</Typography>
@@ -123,16 +138,6 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
             <FormControlLabel key={range} value={range} control={<Radio />} label={range} />
           ))}
         </RadioGroup>
-      </FormControl>
-
-      {/* Group Size Preference */}
-      <FormControl fullWidth>
-        <InputLabel>Preferred Group Size</InputLabel>
-        <Select value={groupSize} label="Preferred Group Size" onChange={handleGroupSizeChange}>
-          {['1-2', '3-4', '5-6', '7+'].map((size) => (
-            <MenuItem key={size} value={size}>{size}</MenuItem>
-          ))}
-        </Select>
       </FormControl>
       <Button type="submit" variant="contained" color="primary">Submit Preferences</Button>
     </Box>

@@ -22,7 +22,7 @@ function LoginLanding({onAuthSuccess, setUsername, username, prefComplete, handl
     <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       <Button onClick={(e) => { e.preventDefault(); handleLoginLandingClick("preferences");}} variant="contained" color="primary">Edit Preferences</Button>
 
-      {prefComplete == "true" ?  <Button variant="contained" color="primary" onClick={(e) => { e.preventDefault(); handleLoginLandingClick("matches");}}>Check Matches</Button>
+      {prefComplete == "true" ?  <Button variant="contained" color="primary" onClick={(e) => { e.preventDefault(); handleLoginLandingClick("matches");}}>Upcoming Plates</Button>
        : 
 
        <div>
@@ -32,7 +32,7 @@ function LoginLanding({onAuthSuccess, setUsername, username, prefComplete, handl
         onMouseEnter={handlePopoverOpen}
         onMouseLeave={handlePopoverClose}
       >
-    <Button disabled={true} type="submit" variant="contained" color="primary" onSubmit={(e) => { e.preventDefault(); handleLoginLandingClick("matches");}}>Check Matches</Button>
+    <Button disabled={true} type="submit" variant="contained" color="primary" onSubmit={(e) => { e.preventDefault(); handleLoginLandingClick("matches");}}>Upcoming Plates</Button>
        
       </Typography>
       <Popover

@@ -122,16 +122,16 @@ def login():
         return jsonify({'message': 'Login successful!'}), 200
     return jsonify({'message': 'Invalid username or password'}), 401
 
-@app.route('/preferences', methods=['POST'])
-def preferences():
-    data = request.get_json()
-    user = User.query.filter_by(username=data['username']).first()
-    print(data)
-    if user:
-        user.set_preferences(data)
-        db.session.commit()
-        return jsonify({'message': 'Preferences updated successfully'}), 200
-    return jsonify({'message': 'User not found'}), 404
+# @app.route('/preferences', methods=['POST'])
+# def preferences():
+#     data = request.get_json()
+#     user = User.query.filter_by(username=data['username']).first()
+#     print(data)
+#     if user:
+#         user.set_preferences(data)
+#         db.session.commit()
+#         return jsonify({'message': 'Preferences updated successfully'}), 200
+#     return jsonify({'message': 'User not found'}), 404
 
 @app.route('/preferences', methods=['GET'])
 def get_preferences():

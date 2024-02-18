@@ -76,6 +76,7 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
         };
   
         const preferencesData = {
+          username: username,
           cuisines,
           distance,
           price,

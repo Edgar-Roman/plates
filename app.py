@@ -57,13 +57,13 @@ class User(UserMixin, db.Model):
     groupSize = db.Column(db.String(100), default="")
     password_hash = db.Column(db.String(128))
     locations = db.Column(db.String(300), default="")
-    restaurants = db.Column(MutableList.as_mutable(db.JSON), default=[])
     date = db.Column(db.String(300), default="")
     availability = db.Column(MutableList.as_mutable(db.JSON), default=[])
     completePref = db.Column(db.String(50), default="false") 
+    restaurants = db.Column(MutableList.as_mutable(db.JSON), default=[])
 
-    def setRestaurants(self, res):
-        self.restaurants = res
+    def set_restaurants(self, restaurants):
+        self.restaurants = restaurants
         
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -342,6 +342,8 @@ def preferences():
     print(locations)
 
     parsedLocations = []
+
+    IDs = []
     for val in locations:
         try:
             print("adding a value")
@@ -350,6 +352,7 @@ def preferences():
                   "rating": val["rating"],
                   "address": val["location"]["address1"] + ", " + val["location"]["city"] + ", " + val["location"]["state"],
                   "yelp": val["url"], "id": val["id"]})
+            IDs.append(val["id"])
         except:
             continue
 
@@ -359,8 +362,16 @@ def preferences():
 
     for val in parsedLocations:
 
-        someUser = LocationDetails(id=val['id'], name=val['name'], image=val["image"], rating=str(val["rating"]), yelp=val["yelp"], address=val["address"])
-        db.session.add(someUser)
+        user = User.query.filter_by(username=data['username']).first()
+        user.set_restaurants(IDs)
+        print(IDs)
+        db.session.commit()
+
+        if LocationDetails.query.filter_by(id=val['id']).count() == 0:
+            continue
+        
+        someLoc = LocationDetails(id=val['id'], name=val['name'], image=val["image"], rating=str(val["rating"]), yelp=val["yelp"], address=val["address"])
+        db.session.add(someLoc)
         db.session.commit()
 
     return jsonify({'message': 'Preferences saved successfully!'}), 200

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Typography, FormGroup, FormControlLabel, Checkbox, Slider, RadioGroup, Radio, FormControl, FormLabel, MenuItem, Select, InputLabel, Button } from '@mui/material';
 
-function PreferencesForm({ onSubmit }) {  // Accept onSubmit as a prop
+function PreferencesForm({ onSubmit }) { // Keep the onSubmit prop in case you need it for other operations.
   const [cuisines, setCuisines] = useState([]);
   const [distance, setDistance] = useState(5);
   const [price, setPrice] = useState('');
@@ -26,7 +26,45 @@ function PreferencesForm({ onSubmit }) {  // Accept onSubmit as a prop
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit();  // Call onSubmit prop function when the form is submitted
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const location = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+
+        const preferencesData = {
+          cuisines,
+          distance,
+          price,
+          groupSize,
+          location,
+        };
+
+        // Use fetch to send the data to your Flask backend
+        fetch('http://127.0.0.1:5000/preferences', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(preferencesData),
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Success:', data);
+          onSubmit(); // You can still call onSubmit here if needed
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+
+      }, (error) => {
+        console.error("Error obtaining location: ", error);
+        // Handle the error case or set default location values as needed
+      });
+    } else {
+      console.log("Geolocation is not supported by this browser.");
+      // Handle the unsupported case
+    }
   };
 
   return (

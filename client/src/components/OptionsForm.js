@@ -3,7 +3,7 @@ import { Card, CardContent, Typography, CardActions, Button, Box } from '@mui/ma
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-function OptionsForm({ onSubmit, selectedTime, username }) {
+function OptionsForm({ onSubmit, selectedTime, username, goToSchedule }) {
   const [acceptedOptions, setAcceptedOptions] = useState([]);
   const [declinedOptions, setDeclinedOptions] = useState([]);
 
@@ -72,39 +72,46 @@ function OptionsForm({ onSubmit, selectedTime, username }) {
   
 return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
+
       {filteredOptions.length > 0 ? (
         filteredOptions.map((option, index) => (
-            <Card key={index} sx={{
-                minWidth: 275,
-                maxWidth: 400,
-                mb: 2,
-                backgroundColor: acceptedOptions.includes(option.name) ? 'yellow' : 'white',
-                backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${option.imageUrl})`, // Add your background image with opacity
-                backgroundSize: 'cover', 
-                backgroundPosition: 'center',
-              }}>
-                <CardContent>
-                  <Typography variant="h5" component="div">
-                    {option.name}
-                  </Typography>
-                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    {option.address}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small" onClick={() => handleAcceptOption(option)} startIcon={<CheckCircleIcon style={{ color: 'green' }} />}>
-                    Accept
-                  </Button>
-                  <Button size="small" onClick={() => handleDeclineOption(option)} startIcon={<CancelIcon style={{ color: 'red' }} />}>
-                    Decline
-                  </Button>
-                </CardActions>
-              </Card>
+          <Card key={index} sx={{
+            minWidth: 275,
+            maxWidth: 400,
+            mb: 2,
+            backgroundColor: acceptedOptions.includes(option.name) ? 'yellow' : 'white',
+            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${option.imageUrl})`, // Add your background image with opacity
+            backgroundSize: 'cover', 
+            backgroundPosition: 'center',
+            border: "1.5px solid #ffffff", borderColor: acceptedOptions.includes(option.name) ? 'rgba(116, 237, 95, 0.8)' : 'none' 
+          }}>
+            <CardContent>
+              <Typography variant="h5" component="div">
+                {option.name}
+              </Typography>
+              <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                {option.address}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button size="small" onClick={() => handleAcceptOption(option)} startIcon={<CheckCircleIcon style={{ color: 'green' }} />}>
+                Accept
+              </Button>
+              <Button size="small" onClick={() => handleDeclineOption(option)} startIcon={<CancelIcon style={{ color: 'red' }} />}>
+                Decline
+              </Button>
+            </CardActions>
+          </Card>
         ))
       ) : (
+        <Box>
+          
         <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
           No Upcoming Plates!
         </Typography>
+        <br></br>
+        <Button onClick={goToSchedule} variant="contained" color="primary">Edit Schedule</Button>
+        </Box>
       )}
     </Box>
   );

@@ -62,9 +62,9 @@ function OptionsForm({ onSubmit, selectedTime, username }) {
 
   // Assuming restaurantOptions is defined within this component
   const restaurantOptions = [
-    { id: 0, name: 'Italian Bistro', address: '123 Pasta Lane' },
-    { id: 1, name: 'Sushi Place', address: '456 Sashimi Blvd' },
-    { id: 2, name: 'Taco Stand', address: '789 Taco Terrace' },
+    { id: 0, name: 'Italian Bistro', address: '123 Pasta Lane', "image": "https://s3-media2.fl.yelpcdn.com/bphoto/lbRKukB38HhVPAfctZFHSA/o.jpg"},
+    { id: 1, name: 'Sushi Place', address: '456 Sashimi Blvd', "image": "https://s3-media2.fl.yelpcdn.com/bphoto/lbRKukB38HhVPAfctZFHSA/o.jpg"},
+    { id: 2, name: 'Taco Stand', address: '789 Taco Terrace', "image": "https://s3-media2.fl.yelpcdn.com/bphoto/lbRKukB38HhVPAfctZFHSA/o.jpg"},
   ];
 
   const filteredOptions = restaurantOptions.filter(option => !declinedOptions.includes(option.name));

@@ -367,7 +367,7 @@ def preferences():
         print(IDs)
         db.session.commit()
 
-        if LocationDetails.query.filter_by(id=val['id']).count() == 0:
+        if LocationDetails.query.filter_by(id=val['id']).count() == 1:
             continue
         
         someLoc = LocationDetails(id=val['id'], name=val['name'], image=val["image"], rating=str(val["rating"]), yelp=val["yelp"], address=val["address"])

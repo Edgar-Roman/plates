@@ -69,36 +69,43 @@ function OptionsForm({ onSubmit, selectedTime, username }) {
 
   const filteredOptions = restaurantOptions.filter(option => !declinedOptions.includes(option.name));
 
-  return (
+  
+return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
-      {filteredOptions.map((option, index) => (
-        <Card key={index} sx={{
-          minWidth: 275,
-          maxWidth: 400,
-          mb: 2,
-          backgroundColor: acceptedOptions.includes(option.name) ? 'yellow' : 'white',
-          backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${option.imageUrl})`, // Add your background image with opacity
-          backgroundSize: 'cover', 
-          backgroundPosition: 'center',
-        }}>
-          <CardContent>
-            <Typography variant="h5" component="div">
-              {option.name}
-            </Typography>
-            <Typography sx={{ mb: 1.5 }} color="text.secondary">
-              {option.address}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Button size="small" onClick={() => handleAcceptOption(option)} startIcon={<CheckCircleIcon style={{ color: 'green' }} />}>
-              Accept
-            </Button>
-            <Button size="small" onClick={() => handleDeclineOption(option)} startIcon={<CancelIcon style={{ color: 'red' }} />}>
-              Decline
-            </Button>
-          </CardActions>
-        </Card>
-      ))}
+      {filteredOptions.length > 0 ? (
+        filteredOptions.map((option, index) => (
+            <Card key={index} sx={{
+                minWidth: 275,
+                maxWidth: 400,
+                mb: 2,
+                backgroundColor: acceptedOptions.includes(option.name) ? 'yellow' : 'white',
+                backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url(${option.imageUrl})`, // Add your background image with opacity
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center',
+              }}>
+                <CardContent>
+                  <Typography variant="h5" component="div">
+                    {option.name}
+                  </Typography>
+                  <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                    {option.address}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button size="small" onClick={() => handleAcceptOption(option)} startIcon={<CheckCircleIcon style={{ color: 'green' }} />}>
+                    Accept
+                  </Button>
+                  <Button size="small" onClick={() => handleDeclineOption(option)} startIcon={<CancelIcon style={{ color: 'red' }} />}>
+                    Decline
+                  </Button>
+                </CardActions>
+              </Card>
+        ))
+      ) : (
+        <Typography variant="h6" color="text.secondary" sx={{ mt: 2 }}>
+          No Upcoming Plates!
+        </Typography>
+      )}
     </Box>
   );
 }

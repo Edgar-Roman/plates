@@ -3,23 +3,68 @@ import { Card, CardContent, Typography, CardActions, Button, Box } from '@mui/ma
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-function OptionsForm({ onSubmit, selectedTime }) {
+function OptionsForm({ onSubmit, selectedTime, username }) {
   const [acceptedOptions, setAcceptedOptions] = useState([]);
   const [declinedOptions, setDeclinedOptions] = useState([]);
 
   const handleAcceptOption = (option) => {
     setAcceptedOptions(prev => [...prev, option.name]);
+
+    const requestOptions = {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        {
+        "username": username,
+        "id": option["id"]
+    })
+    };
+
+    fetch('http://127.0.0.1:5000/locationChoose', requestOptions).then((res) => {
+
+      if (res.status === 200) {
+      } else {
+        res.json().then((json) => {
+          alert(json["message"])
+        })
+      }
+      
+    })
+
   };
 
-  const handleDeclineOption = (optionName) => {
-    setDeclinedOptions(prev => [...prev, optionName]);
+  const handleDeclineOption = (option) => {
+    setDeclinedOptions(prev => [...prev, option.name]);
+
+    const requestOptions = {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        {
+        "username": username,
+        "id": option["id"]
+    })
+    };
+
+    fetch('http://127.0.0.1:5000/locationRemove', requestOptions).then((res) => {
+
+      if (res.status === 200) {
+      } else {
+        res.json().then((json) => {
+          alert(json["message"])
+        })
+      }
+      
+    })
   };
 
   // Assuming restaurantOptions is defined within this component
   const restaurantOptions = [
-    { name: 'Italian Bistro', address: '123 Pasta Lane' },
-    { name: 'Sushi Place', address: '456 Sashimi Blvd' },
-    { name: 'Taco Stand', address: '789 Taco Terrace' },
+    { id: 0, name: 'Italian Bistro', address: '123 Pasta Lane' },
+    { id: 1, name: 'Sushi Place', address: '456 Sashimi Blvd' },
+    { id: 2, name: 'Taco Stand', address: '789 Taco Terrace' },
   ];
 
   const filteredOptions = restaurantOptions.filter(option => !declinedOptions.includes(option.name));
@@ -35,15 +80,15 @@ function OptionsForm({ onSubmit, selectedTime }) {
             <Typography sx={{ mb: 1.5 }} color="text.secondary">
               {option.address}
             </Typography>
-            <Typography variant="body2">
+            {/* <Typography variant="body2">
               Selected Time: {selectedTime.format('dddd, MMMM D, YYYY h:mm A')}
-            </Typography>
+            </Typography> */}
           </CardContent>
           <CardActions>
             <Button size="small" onClick={() => handleAcceptOption(option)} startIcon={<CheckCircleIcon style={{ color: 'green' }} />}>
               Accept
             </Button>
-            <Button size="small" onClick={() => handleDeclineOption(option.name)} startIcon={<CancelIcon style={{ color: 'red' }} />}>
+            <Button size="small" onClick={() => handleDeclineOption(option)} startIcon={<CancelIcon style={{ color: 'red' }} />}>
               Decline
             </Button>
           </CardActions>

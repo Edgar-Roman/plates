@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import RegistrationForm from './components/RegistrationForm';
 import LoginForm from './components/LoginForm';
+import LoginLanding from './components/LoginLanding';
 import PreferencesForm from './components/PreferencesForm';
 import SchedulerForm from './components/SchedulerForm';
 import OptionsForm from './components/OptionsForm';
 import { AppBar, Toolbar, Typography, Container, Box, Button, createTheme, ThemeProvider } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import IdentitySecure from './components/IdentitySecure';
 
 const theme = createTheme({
   palette: {
@@ -30,12 +32,23 @@ function App() {
   const [isNewUser, setIsNewUser] = useState(true);
   const [view, setView] = useState('auth');
   const [selectedTime, setSelectedTime] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // State to track if user is logged in
+  const [selectedOption, setSelectedOption] = useState(null); // State to store the selected option
+  const [username, setUsername] = useState(null);
+  const [prefComplete, setPrefComplete] = useState(false);
+  const [loginVsRegister, setLoginVsRegister] = useState("");
 
-  const handleAuthSuccess = () => {
-    setView('preferences');
-    setIsLoggedIn(true);
+  const handleAuthSuccess = (lvr) => {
+    console.log("stuff")
+    if (lvr == "login") {
+      console.log("stuff1")
+      setView("landingLogin");
+    } else {
+      console.log("stuff2")
+      //setView("landingLogin");
+      setView('identity');
+    }
+   //s setIsLoggedIn(true); // Assume user is logged in after successful auth
   };
 
   const handlePreferencesSubmit = () => setView('scheduler');
@@ -50,56 +63,84 @@ function App() {
     setView('options');
   };
 
-  return (
-    <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <AppBar position="static" color="transparent" elevation={0} sx={{ backdropFilter: 'blur(10px)' }}>
-          <Toolbar sx={{ minHeight: '100px', justifyContent: 'flex-start', pt: '20px', pl: '20px' }}>
-            <Typography variant="h2" color="primary" noWrap sx={{ flexGrow: 1, fontSize: '3.5rem', lineHeight: '1', fontWeight: 'bold' }}>
-              Plates
-            </Typography>
-            {isLoggedIn && (
-              <Button color="primary" onClick={() => {}}>Profile</Button>
-            )}
-          </Toolbar>
-        </AppBar>
+  // This should also be the main screen if you go to the home menu
+  const handleLoginLandingClick = (clicked) => {
+    console.log("GOT HERE!")
+    if (clicked === "matches") {
+      console.log("GOT HERE")
+      setView('options');
+    } else if (clicked === "preferences") {
+      setView('preferences');
+    }
+  }
+  
+  const navigateToUserForm = () => setView('userForm'); // Function to navigate to the UserForm
 
-        {/* Adjust the height of the main container to account for the AppBar's increased height */}
-        <Container component="main" sx={{ display: 'flex', height: 'calc(100vh - 100px)', alignItems: 'center', justifyContent: 'center' }}>
-        <Box sx={{
-            width: '100%',
-            maxWidth: 360,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            boxShadow: 3,
-            p: 4,
-            borderRadius: 2,
-            bgcolor: 'background.paper',
-          }}>
-            {view === 'auth' && (
-              <>
-                <Typography component="h1" variant="h5" gutterBottom>
-                  {isNewUser ? 'Register' : 'Login'}
-                </Typography>
-                {isNewUser ? <RegistrationForm onAuthSuccess={handleAuthSuccess} /> : <LoginForm onAuthSuccess={handleAuthSuccess} />}
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  sx={{ mt: 3 }}
-                  onClick={() => setIsNewUser(!isNewUser)}
-                >
-                  {isNewUser ? 'Existing User? Login' : 'New User? Register'}
-                </Button>
-              </>
-            )}
-            {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} />}
-            {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} />}
-            {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} />}
-          </Box>
-        </Container>
-      </LocalizationProvider>
-    </ThemeProvider>
+  const handleIconPress = (clicked) => {
+    console.log("Icon clicked")
+    if (username !== null) {
+      setView("landingLogin");
+    }
+  }
+
+  const handleIdentitySubmit = (option) => {
+    setView('preferences'); // Navigate to the user form (or any other view as needed)
+  };
+
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Container component="main" maxWidth="xs">
+        <Header username={username} handleIconPress={handleIconPress}/>
+        <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          {view === 'auth' && (
+            <>
+              <Typography component="h1" variant="h5">
+                {isNewUser ? 'Register' : 'Login'}
+              </Typography>
+              {isNewUser ? <RegistrationForm onAuthSuccess={handleAuthSuccess} setUsername={setUsername} username={username} setLoginVsRegister={setLoginVsRegister}/> : <LoginForm onAuthSuccess={handleAuthSuccess} setUsername={setUsername} username={username} setLoginVsRegister={setLoginVsRegister} setPrefComplete={setPrefComplete}/>}
+              <Button
+                fullWidth
+                variant="outlined"
+                sx={{ mt: 3 }}
+                onClick={() => {
+                  setIsNewUser(!isNewUser)
+                }}
+              >
+                {isNewUser ? 'Existing User? Login' : 'New User? Register'}
+              </Button>
+            </>
+          )}
+          {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} username={username} setPrefComplete={setPrefComplete}/>}
+          {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} username={username} setPrefComplete={setPrefComplete} />}
+          {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} username={username} />}
+          {view === 'landingLogin' && <LoginLanding prefComplete={prefComplete} handleLoginLandingClick={handleLoginLandingClick}/>}
+          {view === 'identity' && <IdentitySecure username={username} onSubmit={handleIdentitySubmit}/>}
+          
+            {/* <Button sx={{backgroundColor:"#ed5f74", color:"white"}}
+            onClick={() => {
+               const requestOptions = {
+                method: 'POST',
+                credentials: 'include',
+                
+              };
+          
+              fetch('http://127.0.0.1:4242/create-verification-session', requestOptions)
+
+            }}>Verify User Before Preceding</Button> */}
+
+          {/* {isLoggedIn && view !== 'userForm' && (
+            <Button
+              variant="contained"
+              sx={{ mt: 2 }}
+              onClick={navigateToUserForm}
+            >
+              Go to User Form
+            </Button>
+          )} */}
+        </Box>
+      </Container>
+    </LocalizationProvider>
   );
 }
 

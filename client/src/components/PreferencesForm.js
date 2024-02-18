@@ -1,11 +1,39 @@
 import React, { useState } from 'react';
 import { Box, Typography, FormGroup, FormControlLabel, Checkbox, Slider, RadioGroup, Radio, FormControl, FormLabel, MenuItem, Select, InputLabel, Button } from '@mui/material';
 
-function PreferencesForm({ onSubmit }) { // Keep the onSubmit prop in case you need it for other operations.
+function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
   const [cuisines, setCuisines] = useState([]);
   const [distance, setDistance] = useState(5);
   const [price, setPrice] = useState('');
   const [groupSize, setGroupSize] = useState('');
+
+  function addPreferences() {
+    const requestOptions = {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        {
+        "username": username,
+        "cuisines": cuisines,
+        "distance": distance,
+        "price": price,
+        "groupSize": groupSize
+    })
+    };
+
+    fetch('http://127.0.0.1:5000/preferences', requestOptions).then((res) => {
+
+    if (res.status === 200) {
+      onSubmit();
+    } else {
+      res.json().then((json) => {
+        alert(json["message"])
+      })
+    }
+    }) 
+  }
+
 
   const handleCuisineChange = (event) => {
     const { name, checked } = event.target;

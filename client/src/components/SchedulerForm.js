@@ -4,15 +4,56 @@ import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Box, Button, TextField } from '@mui/material';
 
-function SchedulerForm({ onSubmit }) {
+function SchedulerForm({ onSubmit, username, setPrefComplete}) {
   const [selectedDate, setSelectedDate] = useState(dayjs());
+
+
+  function addSchedule() {
+    const requestOptions = {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(
+        {
+        "username": username,
+        "date": selectedDate,
+    })
+    };
+
+    fetch('http://127.0.0.1:5000/date', requestOptions).then((res) => {
+
+    if (res.status === 200) {
+      // successfuly finished preferences for a user so edit fetch to do that
+      const confirmOptions = {
+        method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          "username": username,
+          "change": "true" })};
+      fetch('http://127.0.0.1:5000/completePref', confirmOptions).then((res) => {
+        if (res.status !== 200) {
+          alert("could not connect to server");
+          return
+        } else {
+          setPrefComplete(true)
+        }
+      })
+
+      onSubmit(selectedDate);
+    } else {
+      res.json().then((json) => {
+        alert(json["message"])
+      })
+    }
+    }) 
+  }
 
   const handleDateChange = (newValue) => {
     setSelectedDate(newValue);
   };
 
   const handleSubmit = () => {
-    onSubmit(selectedDate); // Pass the selected date/time to the parent component on submit
+    addSchedule()
+    //onSubmit(selectedDate); // Pass the selected date/time to the parent component on submit
   };
 
   return (

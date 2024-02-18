@@ -110,9 +110,9 @@ return (
           No Upcoming Plates!
         </Typography>
         <br></br>
-        <Button onClick={goToSchedule} variant="contained" color="primary">Edit Schedule</Button>
         </Box>
       )}
+      <Button onClick={goToSchedule} variant="contained" color="primary">Edit Schedule</Button>
     </Box>
   );
 }

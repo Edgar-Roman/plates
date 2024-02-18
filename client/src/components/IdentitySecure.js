@@ -12,7 +12,7 @@ function IdentitySecure({onSubmit, username}) {
       <form style={{"textAlign": "center"}} target="_blank" onClick={() => {
         setTimeout(() => {
           onSubmit();
-       }, 3000);
+       }, 2000);
       }} action={"http://localhost:4242/create-verification-session?username=" + username} method="POST">
             <Button sx={{backgroundColor:"#ed5f74", color:"white"}} type="submit">Verify User</Button>
       </form>

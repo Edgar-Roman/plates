@@ -13,6 +13,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from flask import Flask, redirect, render_template, jsonify, request, send_from_directory
 import stripe
 import os
+import json
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
@@ -30,19 +31,19 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-class LocationTimePair(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    location = db.Column(db.String(100))
-    time = db.Column(db.String(100))
+class LocationDetails(db.Model):
+    id = db.Column(db.String(300), primary_key=True)
+    image = db.Column(db.String(400))
+    yelp = db.Column(db.String(400))
+    name = db.Column(db.String(100))
+    rating = db.Column(db.String(30))
+    address = db.Column(db.String(100))
 
-    def set_location(self, location):
-        self.location = location
-    
-    def set_time(self, time):
-        self.time = time
+    # def set_location(self, location):
+    #     self.location = location
 
-    def get_pair(self):
-        return {"location": self.location, "time": self.time}
+    # def get_pair(self):
+    #     return {"location": self.location, "time": self.time}
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -167,7 +168,7 @@ def locationRemove():
 @app.route('/locationPair', methods=['GET'])
 def locationPair():
     data = request.get_json()
-    loc_pair_values = LocationTimePair.query.filter_by(id=data["id"]).first()
+    loc_pair_values = LocationDetails.query.filter_by(id=data["id"]).first()
     if loc_pair_values:
         return jsonify(loc_pair_values.get_pair()), 200
     else:
@@ -294,6 +295,17 @@ def preferences():
 
     response = requests.get(url = ENDPOINT, params = PARAMETERS, headers = HEADERS)
     business_data = response.json()
+
+    print(type(business_data))
+
+    test = json.dumps(business_data) 
+
+    # f = open("./demofile2.txt", "a")
+    # f.write(test)
+    # f.close()
+
+    print(test)
+
     
     locations = business_data["businesses"]
 
@@ -301,17 +313,25 @@ def preferences():
 
     parsedLocations = []
     for val in locations:
-        if val.get("name", None) and val.get("image_url", None) and val.get("rating", None) and val.get("address1", None) and val.get("url", None):
+        try:
             print("adding a value")
             parsedLocations.append({"name": val["name"],
                   "image": val["image_url"],
                   "rating": val["rating"],
-                  "address": val["address1"] + ", " + val["city"] + ", " + val["state"],
-                  "yelp": val["url"]})
+                  "address": val["location"]["address1"] + ", " + val["location"]["city"] + ", " + val["location"]["state"],
+                  "yelp": val["url"], "id": val["id"]})
+        except:
+            continue
 
     print("here")
     print(len(parsedLocations))
     print(parsedLocations)
+
+    for val in parsedLocations:
+
+        someUser = LocationDetails(id=val['id'], name=val['name'], image=val["image"], rating=str(val["rating"]), yelp=val["yelp"], address=val["address"])
+        db.session.add(someUser)
+        db.session.commit()
 
     return jsonify({'message': 'Preferences saved successfully!'}), 200
 

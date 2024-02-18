@@ -97,18 +97,28 @@ function App() {
         </Toolbar>
       </AppBar>
         <Container component="main" sx={{ display: 'flex', height: 'calc(100vh - 100px)', alignItems: 'center', justifyContent: 'center' }}>
-          <Box sx={{
-            width: '100%',
-            maxWidth: 360,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            boxShadow: 3,
-            p: 4,
-            borderRadius: 2,
-            bgcolor: 'background.paper',
-            '& > :not(style)': { mb: 2 }, // Adding space below each element including Typography
-          }}>
+        <Box sx={{
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  bgcolor: 'background.default', // Use the default background color for the outer area
+  p: 5, // Padding to create space around the "plate"
+  borderRadius: '50%', // Make the outer container fully round
+  width: 750, // Set a larger width for the "plate"
+  height: 750, // Set a matching height to maintain the circular shape
+  boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.15)', // Soft shadow for a subtle 3D effect
+}}>
+  <Box sx={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '90%', // The inner circle is smaller, representing the eating surface
+    height: '90%', // Matching height to maintain the circular shape
+    bgcolor: 'background.paper', // Use a paper color or any color that represents your plate
+    borderRadius: '50%', // Fully rounded to maintain the circular shape
+    boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.1)', // Inner shadow to enhance the "plate" effect
+  }}>
             {view === 'auth' && (
               <>
                 <Typography component="h1" variant="h5">
@@ -130,6 +140,7 @@ function App() {
             {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} username={username}/>}
             {view === 'landingLogin' && <LoginLanding prefComplete={prefComplete} handleLoginLandingClick={handleLoginLandingClick}/>}
             {view === 'identity' && <IdentitySecure username={username} onSubmit={handleIdentitySubmit}/>}
+          </Box>
           </Box>
         </Container>
       </LocalizationProvider>

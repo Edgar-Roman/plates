@@ -44,14 +44,16 @@ function App() {
     setIsLoggedIn(true); // Set isLoggedIn to true upon successful authentication
 
     if (lvr === "login") {
-      setView("landingLogin");
+      setView("options");
     } else {
       setView('identity');
     }
   };
   
 
-  const handlePreferencesSubmit = () => setView('scheduler');
+  const handlePreferencesSubmit = () => setView('options');
+
+  const handleGoToSchedule = () => setView('scheduler');
 
   const handleSchedulerSubmit = (time) => {
     setSelectedTime(time);
@@ -128,7 +130,7 @@ function App() {
             )}
             {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} username={username} setPrefComplete={setPrefComplete}/>}
             {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} username={username} setPrefComplete={setPrefComplete}/>}
-            {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} username={username} goToSchedule={handlePreferencesSubmit}/>}
+            {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} username={username} goToSchedule={handleGoToSchedule}/>}
             {view === 'landingLogin' && <LoginLanding prefComplete={prefComplete} handleLoginLandingClick={handleLoginLandingClick}/>}
             {view === 'identity' && <IdentitySecure username={username} onSubmit={handleIdentitySubmit}/>}
           </Box>

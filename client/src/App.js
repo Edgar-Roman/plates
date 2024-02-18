@@ -104,40 +104,42 @@ function App() {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  bgcolor: 'background.default', // Use the default background color for the outer area
-  p: 5, // Padding to create space around the "plate"
-  borderRadius: '50%', // Make the outer container fully round
-  width: 750, // Set a larger width for the "plate"
-  height: 750, // Set a matching height to maintain the circular shape
-  boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.15)', // Soft shadow for a subtle 3D effect
+  bgcolor: 'background.default',
+  p: 5,
+  borderRadius: '50%',
+  width: 700,
+  height: 700,
+  boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.15)',
 }}>
   <Box sx={{
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    width: '90%', // The inner circle is smaller, representing the eating surface
-    height: '90%', // Matching height to maintain the circular shape
-    bgcolor: 'background.paper', // Use a paper color or any color that represents your plate
-    borderRadius: '50%', // Fully rounded to maintain the circular shape
-    boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.1)', // Inner shadow to enhance the "plate" effect
+    width: '87%',
+    height: '87%',
+    bgcolor: 'background.paper',
+    borderRadius: '50%',
+    boxShadow: 'inset 0px 4px 4px rgba(0, 0, 0, 0.1)',
+    p: 2, // Added padding inside the inner Box for spacing
   }}>
-            {view === 'auth' && (
-              <>
-                <Typography component="h1" variant="h5">
-                  {isNewUser ? 'Register' : 'Login'}
-                </Typography>
-                {isNewUser ? <RegistrationForm onAuthSuccess={handleAuthSuccess} setUsername={setUsername} setLoginVsRegister={setLoginVsRegister}/> : <LoginForm onAuthSuccess={handleAuthSuccess} setUsername={setUsername} setLoginVsRegister={setLoginVsRegister} setPrefComplete={setPrefComplete}/>}
-                <Button
-                  fullWidth
-                  variant="outlined"
-                  sx={{ mt: 3 }}
-                  onClick={() => setIsNewUser(!isNewUser)}
-                >
-                  {isNewUser ? 'Existing User? Login' : 'New User? Register'}
-                </Button>
-              </>
-            )}
+    {view === 'auth' && (
+      <>
+        <Typography component="h1" variant="h5" sx={{ mt: 2, mb: 3 }}> {/* Added margin for spacing */}
+          {isNewUser ? 'Register' : 'Login'}
+        </Typography>
+        {isNewUser ? <RegistrationForm onAuthSuccess={handleAuthSuccess} setUsername={setUsername} setLoginVsRegister={setLoginVsRegister}/> : <LoginForm onAuthSuccess={handleAuthSuccess} setUsername={setUsername} setLoginVsRegister={setLoginVsRegister} setPrefComplete={setPrefComplete}/>}
+        <Box sx={{ width: '50%', mt: 3 }}> {/* Control the width of the button by wrapping it in a Box */}
+          <Button
+            fullWidth // Button will fill the width of the Box it's contained within
+            variant="outlined"
+            onClick={() => setIsNewUser(!isNewUser)}
+          >
+            {isNewUser ? 'Existing User? Login' : 'New User? Register'}
+          </Button>
+        </Box>
+      </>
+    )}
             {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} username={username} setPrefComplete={setPrefComplete}/>}
             {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} username={username} setPrefComplete={setPrefComplete}/>}
             {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} username={username} goToSchedule={handleGoToSchedule}/>}

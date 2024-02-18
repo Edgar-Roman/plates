@@ -64,14 +64,17 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
+  
+    // Immediately navigate to the next step, don't wait for submission to complete
+    onSubmit(); // Assuming `onSubmit` navigates the user to the next step
+  
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const location = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         };
-
+  
         const preferencesData = {
           cuisines,
           distance,
@@ -79,8 +82,8 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
           groupSize,
           location,
         };
-
-        // Use fetch to send the data to your Flask backend
+  
+        // Asynchronously send the data to the backend
         fetch('http://127.0.0.1:5000/preferences', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -89,21 +92,23 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
         .then(response => response.json())
         .then(data => {
           console.log('Success:', data);
-          onSubmit(); // You can still call onSubmit here if needed
+          // Handle success (optional, since we've already navigated away)
         })
         .catch((error) => {
           console.error('Error:', error);
+          // Handle error (optional, might log this error or send it to an error tracking service)
         });
-
+  
       }, (error) => {
         console.error("Error obtaining location: ", error);
-        // Handle the error case or set default location values as needed
+        // Optionally handle the error (e.g., log it or notify the user in some non-intrusive way)
       });
     } else {
-      console.log("Geolocation is notsupported by this browser.");
-      // Handle the unsupported case
+      console.log("Geolocation is not supported by this browser.");
+      // Optionally handle the unsupported case
     }
   };
+  
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -111,20 +116,35 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
 
       {/* Updated Cuisine Preferences using ToggleButtonGroup */}
       <Typography variant="subtitle1" sx={{ mt: 2, mb: 2 }}>Cuisine Preferences</Typography>
-      <ToggleButtonGroup
+        <ToggleButtonGroup
         value={selectedCuisines}
         onChange={handleCuisineChange}
         aria-label="cuisine preferences"
         orientation="vertical"
         fullWidth
-        sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 1 }}
-      >
+        sx={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', 
+            gap: 1,
+            '& .MuiToggleButton-root': { // Default styles for ToggleButton
+            borderColor: 'primary.main', // Use the primary color for border
+            },
+            '& .MuiToggleButton-root.Mui-selected': { // Styles for selected ToggleButton
+            color: 'primary.contrastText', // Text color for selected state
+            backgroundColor: 'primary.main', // Background color for selected state
+            '&:hover': {
+                backgroundColor: 'primary.dark', // Darken the button slightly on hover
+            },
+            },
+        }}
+        >
         {cuisines.map((cuisine) => (
-          <ToggleButton key={cuisine} value={cuisine} aria-label={cuisine}>
+            <ToggleButton key={cuisine} value={cuisine} aria-label={cuisine}>
             {cuisine}
-          </ToggleButton>
+            </ToggleButton>
         ))}
-      </ToggleButtonGroup>
+        </ToggleButtonGroup>
+
 
       {/* Distance Willing to Travel */}
       <Typography variant="subtitle1">Distance Willing to Travel (miles)</Typography>

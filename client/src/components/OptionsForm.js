@@ -3,7 +3,7 @@ import { Card, CardContent, Typography, CardActions, Button, Box } from '@mui/ma
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 
-function OptionsForm({ onSubmit, selectedTime, username }) {
+function OptionsForm({ onSubmit, selectedTime, username, goToSchedule }) {
   const [acceptedOptions, setAcceptedOptions] = useState([]);
   const [declinedOptions, setDeclinedOptions] = useState([]);
 
@@ -72,7 +72,7 @@ function OptionsForm({ onSubmit, selectedTime, username }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
       {filteredOptions.map((option, index) => (
-        <Card key={index} sx={{ minWidth: 275, maxWidth: 400, mb: 2, backgroundColor: acceptedOptions.includes(option.name) ? 'yellow' : 'white' }}>
+        <Card key={index} sx={{ minWidth: 275, maxWidth: 400, mb: 2, border: "1px solid #ffffff", borderColor: acceptedOptions.includes(option.name) ? 'rgba(116, 237, 95, 0.5)' : 'none' }}>
           <CardContent>
             <Typography variant="h5" component="div">
               {option.name}
@@ -94,6 +94,8 @@ function OptionsForm({ onSubmit, selectedTime, username }) {
           </CardActions>
         </Card>
       ))}
+
+      <Button onClick={goToSchedule} variant="contained" color="primary">Edit Schedule</Button>
     </Box>
   );
 }

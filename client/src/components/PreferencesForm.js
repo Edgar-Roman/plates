@@ -93,6 +93,7 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
         .then(response => response.json())
         .then(data => {
           console.log('Success:', data);
+          
           // Handle success (optional, since we've already navigated away)
         })
         .catch((error) => {

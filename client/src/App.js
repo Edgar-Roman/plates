@@ -55,6 +55,7 @@ function App() {
 
   const handleSchedulerSubmit = (time) => {
     setSelectedTime(time);
+    setPrefComplete("true")
     setView('options');
   };
 
@@ -127,7 +128,7 @@ function App() {
             )}
             {view === 'preferences' && <PreferencesForm onSubmit={handlePreferencesSubmit} username={username} setPrefComplete={setPrefComplete}/>}
             {view === 'scheduler' && <SchedulerForm onSubmit={handleSchedulerSubmit} username={username} setPrefComplete={setPrefComplete}/>}
-            {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} username={username}/>}
+            {view === 'options' && <OptionsForm selectedTime={selectedTime} onSubmit={handleOptionsSubmit} username={username} goToSchedule={handlePreferencesSubmit}/>}
             {view === 'landingLogin' && <LoginLanding prefComplete={prefComplete} handleLoginLandingClick={handleLoginLandingClick}/>}
             {view === 'identity' && <IdentitySecure username={username} onSubmit={handleIdentitySubmit}/>}
           </Box>

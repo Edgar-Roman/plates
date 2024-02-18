@@ -1,7 +1,1 @@
-# Plates
-### TODOs:
-- handle users who already registered (instead of erroring)
-- after user logs in should show widget list instead of submit preferences page
-- update preference option/button
-- fix database update / setting preference
-- implement matching
+**Plates** is a web-based platform dedicated to enriching lives by bringing people together through the universal language of food. Our mission is to create meaningful social connections by facilitating shared dining experiences that cater to diverse tastes and preferences. By integrating with the Yelp for restaurant selections and using Stripe for identity verification, we prioritize local dining options to support community businesses and promote healthier lifestyles. With every meal, Plates offers an opportunity to discover, connect, and savor, making it more than just a web app—it's a movement towards a more connected, healthful, and vibrant community, one plate at a time.

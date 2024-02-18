@@ -42,19 +42,22 @@ function SchedulerForm({ onSubmit, username }) {
             renderInput={(params) => <TextField {...params} fullWidth />} // Ensure proper JSX syntax
             />
 
-            <TimePicker
+        <TimePicker
             label="Start Time"
             value={startTime}
             onChange={setStartTime}
-            renderInput={(params) => <TextField {...params} fullWidth />} // Repeat the correct structure for TimePicker
-            />
+            renderInput={(params) => <TextField {...params} fullWidth />}
+            minutesStep={30} // Set 30-minute increments for start time
+        />
 
-            <TimePicker
+        <TimePicker
             label="End Time"
             value={endTime}
             onChange={setEndTime}
-            renderInput={(params) => <TextField {...params} fullWidth />} // And for the second TimePicker
-            />
+            renderInput={(params) => <TextField {...params} fullWidth />}
+            minutesStep={30} // Set 30-minute increments for end time
+        />
+
           <Button variant="contained" onClick={addSchedule} sx={{ mt: 1, width: '100%' }}>Add</Button> {/* Button styling for better layout */}
         </Box>
 

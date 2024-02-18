@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
+import uuid
 
 API_KEY = 'FmpIZiUz_dOYjUVcMNX62wD1Hvzv-EOLrgcpzlFqKjKl0icOPpzwAyEpksXOGwIyonqKB18SsXetQ2DM12UXAiNsvI4xseFYfzBfF6yxt4vQpApJd5rKS9IvdvfQZXYx'
 ENDPOINT = 'https://api.yelp.com/v3/businesses/search'
@@ -48,6 +49,12 @@ class LocationDetails(db.Model):
     # def get_pair(self):
     #     return {"location": self.location, "time": self.time}
 
+class Events(db.Model):
+    id = db.Column(db.String(300), primary_key=True)
+    restaurant = db.Column(db.String(300))
+    time = db.Column(db.String(100))
+    
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -61,6 +68,7 @@ class User(UserMixin, db.Model):
     availability = db.Column(MutableList.as_mutable(db.JSON), default=[])
     completePref = db.Column(db.String(50), default="false") 
     restaurants = db.Column(MutableList.as_mutable(db.JSON), default=[])
+    events = db.Column(MutableList.as_mutable(db.JSON), default=[])
 
     def set_restaurants(self, restaurants):
         self.restaurants = restaurants
@@ -235,6 +243,57 @@ def convert_to_unix(schedules):
     return schedules
 
 
+@app.route('/find-matches', methods=['POST'])
+def find_matches():
+    data = request.get_json()
+    current_user = User.query.filter_by(username=data['username']).first()
+
+    if not current_user:
+        return jsonify({'message': 'Current user not found'}), 404
+
+    current_user_restaurants = set(current_user.restaurants)
+
+    # Fetch all other users
+    all_users = User.query.filter(User.id != current_user.id).all()
+
+    matched_users = []
+    for user in all_users:
+        user_restaurants = set(user.restaurants)
+        if current_user_restaurants & user_restaurants:  # Check for intersection
+            matched_users.append(user)
+
+    # Prepare and return the matched users info
+    matches_info = [{'username': user.username, 'common_restaurants': list(current_user_restaurants & set(user.restaurants))} for user in matched_users]
+
+    for matched_user in matched_users:
+        overlap = find_time_overlap(current_user.availability, matched_user.availability)
+        if overlap:
+            for restaurant in matches_info['common_restaurants']:
+                create_event(restaurant, overlap, current_user, matched_user)
+
+    return jsonify({'message': 'Matches processed'}), 200
+
+
+def find_time_overlap(current_user_availability, matched_user_availability):
+    for slot1 in current_user_availability:
+        for slot2 in matched_user_availability:
+            start = max(slot1[0], slot2[0])
+            end = min(slot1[1], slot2[1])
+            if start < end:
+                return start
+    return ''
+
+def create_event(restaurant, time, current_user, matched_user):
+    event_id = str(uuid.uuid4())
+    
+    common_event = Events(id=event_id, restaurant=restaurant, time=str(time))
+    
+    db.session.add(common_event)
+    db.session.commit()
+    
+    return jsonify({'message': 'Event created successfully', 'event_id': event_id}), 200
+
+
 #########################################################
     
 # @app.route('/config', methods=['GET'])
@@ -326,20 +385,17 @@ def preferences():
     response = requests.get(url = ENDPOINT, params = PARAMETERS, headers = HEADERS)
     business_data = response.json()
 
-    print(type(business_data))
+    # print(type(business_data))
 
     test = json.dumps(business_data) 
 
     # f = open("./demofile2.txt", "a")
     # f.write(test)
     # f.close()
-
-    print(test)
-
     
     locations = business_data["businesses"]
 
-    print(locations)
+    # print(locations)
 
     parsedLocations = []
 
@@ -356,15 +412,15 @@ def preferences():
         except:
             continue
 
-    print("here")
-    print(len(parsedLocations))
-    print(parsedLocations)
+    # print("here")
+    # print(len(parsedLocations))
+    # print(parsedLocations)
 
     for val in parsedLocations:
 
         user = User.query.filter_by(username=data['username']).first()
         user.set_restaurants(IDs)
-        print(IDs)
+        # print(IDs)
         db.session.commit()
 
         if LocationDetails.query.filter_by(id=val['id']).count() == 1:

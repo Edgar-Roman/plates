@@ -30,27 +30,59 @@ function SchedulerForm({ onSubmit, username }) {
   //   onSubmit(schedules);
   // };
 
+  // const handleSubmit = () => {
+  //   fetch('http://127.0.0.1:5000/schedule', {  // Replace with your actual endpoint
+  //     method: 'POST',
+  //     credentials: 'include', // Include credentials if needed for sessions
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({schedules, username}), // Assuming you also want to send the username for identification
+  //   })
+  //   .then(response => {
+  //     if (response.ok) {
+  //       console.log('Schedules submitted successfully');
+
+  //       onSubmit(schedules);
+  //     } else {
+  //       // Handle errors or unsuccessful submissions here
+  //       console.error('Failed to submit schedules');
+  //     }
+  //   })
+  //   .catch(error => console.error('Error:', error));
+  // };
   const handleSubmit = () => {
-    fetch('http://127.0.0.1:5000/schedule', {  // Replace with your actual endpoint
+    fetch('http://127.0.0.1:5000/schedule', {
       method: 'POST',
-      credentials: 'include', // Include credentials if needed for sessions
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({schedules, username}), // Assuming you also want to send the username for identification
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ schedules, username }),
     })
     .then(response => {
-      if (response.ok) {
-        console.log('Schedules submitted successfully');
-
-        onSubmit(schedules);
-      } else {
-        // Handle errors or unsuccessful submissions here
-        console.error('Failed to submit schedules');
-      }
+      if (!response.ok) throw new Error('Failed to submit schedules');
+      return response.json();
+    })
+    .then(() => {
+      console.log('Schedules submitted successfully');
+      // Now fetch for matches after successful schedule submission
+      return fetch('http://127.0.0.1:5000/find-matches', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }), // Send the username to find matches
+      });
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Failed to retrieve matches');
+      return response.json();
+    })
+    .then(matches => {
+      console.log('Matches retrieved successfully:', matches);
+      // Handle the matches data (e.g., update state or UI to display matches)
     })
     .catch(error => console.error('Error:', error));
   };
+  
   
 
   return (

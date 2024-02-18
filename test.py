@@ -23,5 +23,10 @@ HEADERS = {'Authorization': 'bearer %s' % API_KEY}
 
 
 url = "https://api.yelp.com/v3/categories"
-response = requests.get(url, headers=HEADERS)
-print(response.text)
+response = requests.get(url, headers=HEADERS).json()
+categories = response['categories']
+
+for category in categories:
+    if 'restaurants' in category['parent_aliases']:
+        print(category['title'])
+        

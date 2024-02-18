@@ -62,7 +62,7 @@ function PreferencesForm({ onSubmit }) { // Keep the onSubmit prop in case you n
         // Handle the error case or set default location values as needed
       });
     } else {
-      console.log("Geolocation is not supported by this browser.");
+      console.log("Geolocation is notsupported by this browser.");
       // Handle the unsupported case
     }
   };

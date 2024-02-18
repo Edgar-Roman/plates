@@ -1,7 +1,7 @@
 import { React, useState} from 'react';
 import { TextField, Button, Box } from '@mui/material';
 
-function RegistrationForm({ onAuthSuccess, setUsername, username }) {
+function RegistrationForm({ onAuthSuccess, setUsername, username, setLoginVsRegister}) {
 
   const [localUser, setLocalUser] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +21,7 @@ function RegistrationForm({ onAuthSuccess, setUsername, username }) {
     fetch('http://127.0.0.1:5000/register', requestOptions).then((res) => {
 
     if (res.status === 200) {
-      onAuthSuccess();
+      onAuthSuccess("register");
       setUsername(localUser)
     } else {
       res.json().then((json) => {

@@ -1,7 +1,7 @@
 import {React, useState} from 'react';
 import { TextField, Button, Box } from '@mui/material';
 
-function LoginForm({ onAuthSuccess, setUsername, username}) {
+function LoginForm({ onAuthSuccess, setUsername, username, setLoginVsRegister, setPrefComplete}) {
 
   const [localUser, setLocalUser] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +21,22 @@ function LoginForm({ onAuthSuccess, setUsername, username}) {
     fetch('http://127.0.0.1:5000/login', requestOptions).then((res) => {
 
       if (res.status === 200) {
-        onAuthSuccess();
+
+        const confirmOptions = {
+          method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            "username": localUser,
+            "change": "" })};
+        fetch('http://127.0.0.1:5000/completePref', confirmOptions).then((res) => {
+          if (res.status !== 200) {
+            alert("could not connect to server");
+            return
+          } else {
+            res.json().then((data) => {setPrefComplete(data["message"]);})
+          }
+        })
+
+        onAuthSuccess("login");
         setUsername(localUser);
       } else {
         res.json().then((json) => {

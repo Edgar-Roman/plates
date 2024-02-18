@@ -80,9 +80,9 @@ function OptionsForm({ onSubmit, selectedTime, username }) {
             <Typography sx={{ mb: 1.5 }} color="text.secondary">
               {option.address}
             </Typography>
-            <Typography variant="body2">
+            {/* <Typography variant="body2">
               Selected Time: {selectedTime.format('dddd, MMMM D, YYYY h:mm A')}
-            </Typography>
+            </Typography> */}
           </CardContent>
           <CardActions>
             <Button size="small" onClick={() => handleAcceptOption(option)} startIcon={<CheckCircleIcon style={{ color: 'green' }} />}>

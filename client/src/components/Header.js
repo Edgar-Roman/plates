@@ -2,7 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Typography, IconButton, Box } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-function Header() {
+function Header({handleIconPress}) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -15,6 +15,7 @@ function Header() {
             edge="end"
             color="inherit"
             aria-label="profile"
+            onClick={(e) => handleIconPress(e)}
           >
             <AccountCircleIcon />
           </IconButton>

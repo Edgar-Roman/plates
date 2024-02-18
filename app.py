@@ -4,9 +4,16 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
+from flask import Flask, redirect, render_template, jsonify, request, send_from_directory
+import stripe
+import os
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 app.config['SECRET_KEY'] = 'your-secret-key'  # Add a secret key for sessions and Flask-Login
+
+stripe.api_version = '2020-08-27'
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 # Database configuration (using SQLite for simplicity)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackathon.db'
@@ -41,6 +48,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     locations = db.Column(db.String(300), default="")
     date = db.Column(db.String(300), default="")
+    completePref = db.Column(db.String(50), default="false") 
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -75,6 +83,12 @@ class User(UserMixin, db.Model):
 
     def set_date(self, date):
         self.date = date
+
+    def setCompletePref(self, val):
+        self.completePref = val
+
+    def getCompletePref(self):
+        return self.completePref
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -163,6 +177,96 @@ def date():
         db.session.commit()
         return jsonify({'message': 'date updated successfully'}), 200
     return jsonify({'message': 'User not found'}), 404
+
+
+@app.route('/completePref', methods=['POST'])
+def completePref():
+    data = request.get_json()
+    user = User.query.filter_by(username=data['username']).first()
+    
+    if data["change"] == "":
+        return jsonify({'message': user.getCompletePref()}), 200
+    else:
+        user.setCompletePref(data["change"])
+        db.session.commit()
+        print(user.getCompletePref())
+        return jsonify({'message': 'change completion status'}), 200
+
+
+
+
+
+
+
+#########################################################
+    
+# @app.route('/config', methods=['GET'])
+# def get_config():
+#     return jsonify({'publishableKey': os.getenv('STRIPE_PUBLISHABLE_KEY')})
+
+
+# @app.route('/create-verification-session', methods=['POST'])
+# def create_verification_session():
+#     #print("STUFF", data)
+#     try:
+#         data = request.form
+#         print("STUFF", data)
+#         verification_session = stripe.identity.VerificationSession.create(
+#             type='document',
+#             metadata={
+#                 'user_id': data
+#             }
+#         )
+#         return redirect(verification_session.url, code=303)
+#     except stripe.error.StripeError as e:
+#         return jsonify({'error': {'message': str(e)}}), 400
+#     except Exception as e:
+#         return jsonify({'error': {'message': str(e)}}), 400
+
+
+# @app.route('/webhook', methods=['POST'])
+# def webhook_received():
+#     print("AHHH")
+#     # You can use webhooks to receive information about asynchronous payment events.
+#     # For more about our webhook events check out https://stripe.com/docs/webhooks.
+#     webhook_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
+#     request_data = json.loads(request.data)
+
+#     if webhook_secret:
+#         # Retrieve the event by verifying the signature using the raw body and secret if webhook signing is configured.
+#         signature = request.headers.get('stripe-signature')
+#         try:
+#             event = stripe.Webhook.construct_event(
+#                 payload=request.data, sig_header=signature, secret=webhook_secret)
+#             data = event['data']
+#         except Exception as e:
+#             return e
+#         # Get the type of webhook event sent - used to check the status of PaymentIntents.
+#         event_type = event['type']
+#     else:
+#         data = request_data['data']
+#         event_type = request_data['type']
+#     data_object = data['object']
+
+
+#     if event['type'] == 'identity.verification_session.verified':
+#         print("All the verification checks passed")
+#         verification_session = data_object
+
+#     elif event['type'] == 'identity.verification_session.requires_input':
+#         print("At least one verification check failed")
+#         verification_session = data_object
+
+#         if verification_session.last_error.code == 'document_unverified_other':
+#             print("The document was invalid")
+#         elif verification_session.last_error.code == 'document_expired':
+#             print("The document was expired")
+#         elif verification_session.last_error.code == 'document_type_not_suported':
+#             print("The document type was not supported")
+#         else:
+#             print("other error code")
+#     return jsonify({'status': 'success'})
+
 
 if __name__ == '__main__':
     with app.app_context():

@@ -10,7 +10,7 @@ function PreferencesForm({ onSubmit, username }) {  // Accept onSubmit as a prop
   
     // List of cuisines
     const cuisines = [
-      "American", "Chinese", "Cuban", "Greek", "Indian", "Italian", "Japanese", "Korean", "Mexican", "Thai", "Vietnamese",
+      "Chinese", "Greek", "Indian", "Italian", "Japanese", "Korean", "Mexican", "Thai", "Vietnamese",
     ];
   
     const handleCuisineChange = (_, newCuisines) => {

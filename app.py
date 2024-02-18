@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Flask, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -11,6 +12,8 @@ HEADERS = {'Authorization': 'bearer %s' % API_KEY}
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 
 from flask import Flask, redirect, render_template, jsonify, request, send_from_directory
+from sqlalchemy.ext.mutable import MutableList
+import json
 import stripe
 import os
 
@@ -53,7 +56,9 @@ class User(UserMixin, db.Model):
     groupSize = db.Column(db.String(100), default="")
     password_hash = db.Column(db.String(128))
     locations = db.Column(db.String(300), default="")
+    restaurants = db.Column(db.String(300), default="")
     date = db.Column(db.String(300), default="")
+    availability = db.Column(MutableList.as_mutable(db.JSON), default=[])
     completePref = db.Column(db.String(50), default="false") 
 
     def set_password(self, password):
@@ -89,6 +94,9 @@ class User(UserMixin, db.Model):
 
     def set_date(self, date):
         self.date = date
+
+    def set_availability(self, availability):
+        self.availability = availability
 
     def setCompletePref(self, val):
         self.completePref = val
@@ -199,9 +207,28 @@ def completePref():
         return jsonify({'message': 'change completion status'}), 200
 
 
+@app.route('/schedule', methods=['POST'])
+def schedule():
+    data = request.get_json()
+    user = User.query.filter_by(username=data['username']).first()
+
+    convert_to_unix(data['schedules'])
+    user.set_availability(data['schedules'])
+    db.session.commit()
+    
+    return jsonify({'message': 'Schedule updated successfully'}), 200
 
 
+def convert_to_unix(schedules):
+    for i, schedule in enumerate(schedules):
+        for key in ['date', 'startTime', 'endTime']:
+            # Remove the 'Z' before conversion as Python's fromisoformat does not support 'Z' directly
+            iso_str = schedule[key].rstrip('Z')
+            dt = datetime.fromisoformat(iso_str)
+            schedule[key] = int(dt.timestamp())
 
+            schedules[i] = (schedule['startTime'], schedule['endTime'])
+    return schedules
 
 
 #########################################################

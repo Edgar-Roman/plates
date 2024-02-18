@@ -25,10 +25,33 @@ function SchedulerForm({ onSubmit, username }) {
     setSchedules(newSchedules);
   };
 
+  // const handleSubmit = () => {
+  //   // Handle the final submission of all schedules
+  //   onSubmit(schedules);
+  // };
+
   const handleSubmit = () => {
-    // Handle the final submission of all schedules
-    onSubmit(schedules);
+    fetch('http://127.0.0.1:5000/schedule', {  // Replace with your actual endpoint
+      method: 'POST',
+      credentials: 'include', // Include credentials if needed for sessions
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({schedules, username}), // Assuming you also want to send the username for identification
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log('Schedules submitted successfully');
+
+        onSubmit(schedules);
+      } else {
+        // Handle errors or unsuccessful submissions here
+        console.error('Failed to submit schedules');
+      }
+    })
+    .catch(error => console.error('Error:', error));
   };
+  
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
